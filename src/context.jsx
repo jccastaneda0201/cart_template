@@ -4,11 +4,13 @@ import cartItems from './data';
 import { CLEAR_CART, REMOVE, INCREASE, DECREASE, LOADING, DISPLAY_ITEMS } from './actions';
 import { getTotals } from './utils';
 
+const url = 'https://www.course-api.com/react-useReducer-cart-project';
+
 const appContext = createContext();
 
 const initialState = {
   loading: false,
-  cart: new Map(cartItems.map((item) => [item.id, item])),
+  cart: new Map(),
 };
 
 export const AppProvider = ({ children }) => {
@@ -30,6 +32,16 @@ export const AppProvider = ({ children }) => {
   const decrease = (id) => {
     dispatch({ type: DECREASE, payload: { id } });
   };
+
+  const fetchData = async () => {
+    dispatch({ type: LOADING });
+    const response = await fetch(url);
+    const cart = await response.json();
+    dispatch({ type: DISPLAY_ITEMS, payload: { cart } });
+  };
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <appContext.Provider
